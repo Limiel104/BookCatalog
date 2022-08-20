@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using BookCatalog.Models;
+using System.Linq;
+using BookCatalog.Dtos;
 using BookCatalog.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,24 +11,25 @@ namespace BookCatalog.Controler
     [Route("books")]
     public class BooksController : ControllerBase
     {
-        private readonly InMemBooksRepository repository;
+        private readonly IBooksRepository repository;
         
-        public BooksController()
+        public BooksController(IBooksRepository repository)
         {
-            repository = new InMemBooksRepository();
+            this.repository = repository;
         }
 
         // GET /books
         [HttpGet]
-        public IEnumerable<Book> GetBooks()
+        public IEnumerable<BookDto> GetBooks()
         {
-            var books = repository.GetBooks();
+            var books = repository.GetBooks().Select( book => book.AsDto());
+            
             return books;
         }
 
         // GET /books/{id}
         [HttpGet("{id}")]
-        public ActionResult<Book> GetBook(Guid id)
+        public ActionResult<BookDto> GetBook(Guid id)
         {
             var book = repository.GetBook(id);
 
@@ -36,7 +38,7 @@ namespace BookCatalog.Controler
                 return NotFound();
             }
 
-            return book;
+            return book.AsDto();
         }
 
     }

@@ -1,8 +1,8 @@
 using System;
 
-namespace BookCatalog.Models
+namespace BookCatalog.Dtos
 {
-    public record Book
+    public record BookDto
     {
         public Guid Id { get; init; }
         public string Title { get; init; }
