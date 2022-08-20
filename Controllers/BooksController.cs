@@ -82,7 +82,22 @@ namespace BookCatalog.Controler
             repository.UpdateBook(updatedBook);
 
             return NoContent();
+        }
 
+        // DELETE /books/{id}
+        [HttpDelete("{id}")]
+        public ActionResult DeleteBook(Guid id)
+        {
+            var existingBook = repository.GetBook(id);
+
+            if (existingBook is null)
+            {
+                return NotFound();
+            }
+
+            repository.DeleteBook(id);
+
+            return NoContent();
         }
 
     }
