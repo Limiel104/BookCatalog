@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookCatalog.Dtos;
+using BookCatalog.Models;
 using BookCatalog.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,6 +41,25 @@ namespace BookCatalog.Controler
 
             return book.AsDto();
         }
+
+        // POST /book
+        [HttpPost]
+        public ActionResult<BookDto> CreateBook(CreateBookDto bookDto)
+        {
+            Book book = new(){
+                Id = Guid.NewGuid(),
+                Title = bookDto.Title,
+                Description = bookDto.Description,
+                Isbn = bookDto.Isbn,
+                Price = bookDto.Price,
+                CreateDate = DateTimeOffset.UtcNow
+            };
+
+            repository.CreateBook(book);
+
+            return CreatedAtAction(nameof(GetBook), new { id = book.Id}, book.AsDto());
+        }
+
 
     }
 }

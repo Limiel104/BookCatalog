@@ -37,11 +37,9 @@ namespace BookCatalog.Repositories
             return books.Where(book => book.Id == id).SingleOrDefault();
         }
 
-
-
-
-
-
-
+        public void CreateBook(Book book)
+        {
+            books.Add(book);
+        }
     }
 }
