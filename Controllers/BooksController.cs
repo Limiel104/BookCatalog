@@ -60,6 +60,30 @@ namespace BookCatalog.Controler
             return CreatedAtAction(nameof(GetBook), new { id = book.Id}, book.AsDto());
         }
 
+        // PUT /books/{id}
+        [HttpPut("{id}")]
+        public ActionResult UpdateBook(Guid id, UpdateBookDto bookDto)
+        {
+            var existingBook = repository.GetBook(id);
+
+            if (existingBook is null)
+            {
+                return NotFound();
+            }
+
+            //with - takes existingBook and make copy of it with following properities modified
+            Book updatedBook = existingBook with {
+                Title = bookDto.Title,
+                Description = bookDto.Description,
+                Isbn = bookDto.Isbn,
+                Price = bookDto.Price
+            };
+
+            repository.UpdateBook(updatedBook);
+
+            return NoContent();
+
+        }
 
     }
 }

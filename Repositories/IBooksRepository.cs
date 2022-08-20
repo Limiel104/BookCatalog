@@ -9,6 +9,7 @@ namespace BookCatalog.Repositories
             Book GetBook(Guid id);
             IEnumerable<Book> GetBooks();
             void CreateBook(Book book);
+            void UpdateBook(Book book);
         }
  }
  

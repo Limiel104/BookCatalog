@@ -41,5 +41,12 @@ namespace BookCatalog.Repositories
         {
             books.Add(book);
         }
+
+        public void UpdateBook(Book book)
+        {
+            var index = books.FindIndex(existingBook => existingBook.Id == book.Id);
+
+            books[index] = book;
+        }
     }
 }
