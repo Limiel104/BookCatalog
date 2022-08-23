@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BookCatalog.Dtos;
 using BookCatalog.Models;
 using BookCatalog.Repositories;
@@ -13,7 +14,7 @@ namespace BookCatalog.Controler
     public class BooksController : ControllerBase
     {
         private readonly IBooksRepository repository;
-        
+
         public BooksController(IBooksRepository repository)
         {
             this.repository = repository;
@@ -21,18 +22,17 @@ namespace BookCatalog.Controler
 
         // GET /books
         [HttpGet]
-        public IEnumerable<BookDto> GetBooks()
+        public async Task<IEnumerable<BookDto>> GetBooksAsync()
         {
-            var books = repository.GetBooks().Select( book => book.AsDto());
-            
+            var books = (await repository.GetBooksAsync()).Select(book => book.AsDto());
             return books;
         }
 
         // GET /books/{id}
         [HttpGet("{id}")]
-        public ActionResult<BookDto> GetBook(Guid id)
+        public async Task<ActionResult<BookDto>> GetBookAsync(Guid id)
         {
-            var book = repository.GetBook(id);
+            var book = await repository.GetBookAsync(id);
 
             if (book is null)
             {
@@ -44,9 +44,10 @@ namespace BookCatalog.Controler
 
         // POST /book
         [HttpPost]
-        public ActionResult<BookDto> CreateBook(CreateBookDto bookDto)
+        public async Task<ActionResult<BookDto>> CreateBookAsync(CreateBookDto bookDto)
         {
-            Book book = new(){
+            Book book = new()
+            {
                 Id = Guid.NewGuid(),
                 Title = bookDto.Title,
                 Description = bookDto.Description,
@@ -55,16 +56,16 @@ namespace BookCatalog.Controler
                 CreateDate = DateTimeOffset.UtcNow
             };
 
-            repository.CreateBook(book);
+            await repository.CreateBookAsync(book);
 
-            return CreatedAtAction(nameof(GetBook), new { id = book.Id}, book.AsDto());
+            return CreatedAtAction(nameof(GetBookAsync), new { id = book.Id }, book.AsDto());
         }
 
         // PUT /books/{id}
         [HttpPut("{id}")]
-        public ActionResult UpdateBook(Guid id, UpdateBookDto bookDto)
+        public async Task<ActionResult> UpdateBook(Guid id, UpdateBookDto bookDto)
         {
-            var existingBook = repository.GetBook(id);
+            var existingBook = await repository.GetBookAsync(id);
 
             if (existingBook is null)
             {
@@ -72,33 +73,33 @@ namespace BookCatalog.Controler
             }
 
             //with - takes existingBook and make copy of it with following properities modified
-            Book updatedBook = existingBook with {
+            Book updatedBook = existingBook with
+            {
                 Title = bookDto.Title,
                 Description = bookDto.Description,
                 Isbn = bookDto.Isbn,
                 Price = bookDto.Price
             };
 
-            repository.UpdateBook(updatedBook);
+            await repository.UpdateBookAsync(updatedBook);
 
             return NoContent();
         }
 
         // DELETE /books/{id}
         [HttpDelete("{id}")]
-        public ActionResult DeleteBook(Guid id)
+        public async Task<ActionResult> DeleteBook(Guid id)
         {
-            var existingBook = repository.GetBook(id);
+            var existingBook = await repository.GetBookAsync(id);
 
             if (existingBook is null)
             {
                 return NotFound();
             }
 
-            repository.DeleteBook(id);
+            await repository.DeleteBookAsync(id);
 
             return NoContent();
         }
-
     }
 }
